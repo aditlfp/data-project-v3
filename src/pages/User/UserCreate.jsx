@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from "react";
-import axios from "../../lib/axios";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import axios from "../../lib/axios";
 
-const UserEdit = ({ props, datas }) => {
-  //   console.log(props, "aku Datas", datas);
-
-  const [name, setName] = useState(props.name);
-  const [role_id, setRole] = useState(props.role_id);
-  const [mitra_id, setMitra] = useState(props.mitra_id);
-  const [email, setEmail] = useState(props.email);
-  const [password, setPassword] = useState(props.password);
+function UserCreate({ csrf, data }) {
+  const [name, setName] = useState();
+  const [role_id, setRole] = useState();
+  const [mitra_id, setMitra] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
   const [confirmation_password, setConfirm] = useState();
   const [awaiting, setAwaiting] = useState(false);
   const [role, setRoles] = useState([]);
   const [mitras, setMitras] = useState([]);
 
   useEffect(() => {
-    setRoles(datas.data.role);
+    setRoles(data.data.role);
   }, []);
 
   useEffect(() => {
-    setMitras(datas.data.mitra);
+    setMitras(data.data.mitra);
   }, []);
 
   const handleRoleChange = (e) => {
@@ -31,15 +29,12 @@ const UserEdit = ({ props, datas }) => {
     setMitra(e.target.value);
   };
 
-  const csrf = () => axios.get("api/sanctum/csrf");
-  //   console.log(csrf());
-
   const submitHandler = async (e) => {
     e.preventDefault();
     setAwaiting(true);
     if (csrf) {
       await axios
-        .patch(`api/user/${props.id}`, {
+        .post("api/user", {
           name,
           role_id,
           mitra_id,
@@ -48,8 +43,14 @@ const UserEdit = ({ props, datas }) => {
           confirmation_password,
         })
         .then((res) => {
-          toast.success(`User Has Updated!`);
+          toast.success(`User Has Created!`);
           setAwaiting(false);
+          setName("");
+          setRole("");
+          setMitra("");
+          setEmail("");
+          setPassword("");
+          setConfirm("");
         });
     } else {
       console.error("CSRF : Missmatch");
@@ -65,19 +66,19 @@ const UserEdit = ({ props, datas }) => {
       >
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Nama</span>
+            <span className="label-text required">Nama</span>
           </label>
           <input
             type="text"
             placeholder="Name ..."
             className="input input-bordered"
-            value={name}
+            required
             onChange={(e) => setName(e.target.value)}
           />
         </div>
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Role</span>
+            <span className="label-text required">Role</span>
           </label>
           <select
             className="select select-bordered w-full"
@@ -88,11 +89,7 @@ const UserEdit = ({ props, datas }) => {
               Select Role
             </option>
             {role.map((item, i) => (
-              <option
-                selected={item.id == role_id ? true : ""}
-                value={item.id}
-                key={i}
-              >
+              <option value={item.id} key={i}>
                 {item.name}
               </option>
             ))}
@@ -100,7 +97,7 @@ const UserEdit = ({ props, datas }) => {
         </div>
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Mitra</span>
+            <span className="label-text required">Mitra</span>
           </label>
           <select
             className="select select-bordered w-full"
@@ -111,11 +108,7 @@ const UserEdit = ({ props, datas }) => {
               Select Mitra
             </option>
             {mitras.map((item, i) => (
-              <option
-                selected={item.id == mitra_id ? true : ""}
-                value={item.id}
-                key={i}
-              >
+              <option value={item.id} key={i}>
                 {item.name}
               </option>
             ))}
@@ -123,35 +116,37 @@ const UserEdit = ({ props, datas }) => {
         </div>
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Email</span>
+            <span className="label-text required">Email</span>
           </label>
           <input
             type="email"
             placeholder="example@gmail.com ..."
             className="input input-bordered"
-            value={email}
+            required
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Password</span>
+            <span className="label-text required">Password</span>
           </label>
           <input
             type="password"
             placeholder="password"
             className="input input-bordered"
+            required
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Confirmation Password</span>
+            <span className="label-text required">Confirmation Password</span>
           </label>
           <input
             type="password"
-            placeholder="Confirmation password"
+            placeholder="password"
             className="input input-bordered"
+            required
             onChange={(e) => setConfirm(e.target.value)}
           />
         </div>
@@ -169,6 +164,6 @@ const UserEdit = ({ props, datas }) => {
       </form>
     </div>
   );
-};
+}
 
-export default UserEdit;
+export default UserCreate;

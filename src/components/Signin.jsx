@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "../lib/axios";
@@ -7,15 +8,16 @@ import Title from "./Title";
 export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState("");
   const [waiting, setWaiting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { signin } = useAuth();
   const navigate = useNavigate();
   const verbose = true;
 
   const csrf = () => axios.get("api/sanctum/csrf");
   // console.log(csrf());
-  async function submitHandler(e) {
+  const submitHandler = async (e) => {
     e.preventDefault();
     setWaiting(true);
 
@@ -27,16 +29,24 @@ export default function Signin() {
           password,
         })
         .then((response) => {
+          // console.log(response);
           navigate("/dashboard", { state: { userData: response.data } });
         })
         .catch((error) => {
-          setError("Data Not Found");
+          if (error.response && error.response.status === 422) {
+            // Handle validation errors
+            setErrors(error.response.data.errors);
+          } else {
+            setErrors({});
+            setErrors("Data Not Found");
+          }
         });
     } catch (err) {
-      setError(verbose ? err.message : "Failed To Login");
+      setErrors({});
+      setErrors(verbose ? err.message : "Failed To Login");
     }
     setWaiting(false);
-  }
+  };
 
   return (
     <>
@@ -59,22 +69,69 @@ export default function Signin() {
                   <input
                     type="email"
                     placeholder="email"
-                    className="input input-bordered"
+                    className={`input input-bordered pr-20 ${
+                      errors.email ? "input-error" : ""
+                    }`}
                     required
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        email: "",
+                      }));
+                    }}
                   />
+                  {errors.email && (
+                    <span className="text-xs text-error">
+                      {errors.email[0]}
+                    </span>
+                  )}
                 </div>
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text">Password</span>
                   </label>
-                  <input
-                    type="password"
-                    placeholder="password"
-                    className="input input-bordered"
-                    required
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="flex flex-row gap-5">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="password"
+                      className={`input input-bordered pr-20 ${
+                        errors.password ? "input-error" : ""
+                      }`}
+                      required
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setErrors((prevErrors) => ({
+                          ...prevErrors,
+                          password: "",
+                        }));
+                      }}
+                    />
+                    {/* Code Button Show or hidden password */}
+                    <button
+                      type="button"
+                      className={`flex rounded-full h-9 mt-1 p-2 items-center focus:outline-none transition-all ease-in-out .2s ${
+                        showPassword
+                          ? "bg-red-500 hover:bg-red-700"
+                          : "bg-blue-500 hover:bg-blue-700"
+                      }`}
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        // Show the "hide" icon or text
+                        <AiFillEyeInvisible className="h-5 w-5 text-white" />
+                      ) : (
+                        // Show the "show" icon or text
+                        <AiFillEye className="h-5 w-5 text-white" />
+                      )}
+                    </button>
+                    {/* Code Button Show or hidden password */}
+                  </div>
+                  {errors.password && (
+                    <span className="text-xs text-error">
+                      {errors.password[0]}
+                    </span>
+                  )}
                   <div className="text-start">
                     <a
                       href="/signup"

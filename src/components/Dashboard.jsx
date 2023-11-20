@@ -4,7 +4,10 @@ import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import axios from "../lib/axios";
 
 export default function Dashboard() {
+  // console.log(userData);
   const location = useLocation();
+  const data = location.state && location.state.userData;
+
   const [error, setError] = useState("");
   const [waiting, setWaiting] = useState(false);
   const navigate = useNavigate();
@@ -12,7 +15,7 @@ export default function Dashboard() {
   const [user, setUser] = useState();
 
   useEffect(() => {
-    axios.get("api/user").then((res) => setUser(res.data));
+    setUser(data);
   }, []);
 
   function handleLogout() {

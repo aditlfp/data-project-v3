@@ -1,12 +1,17 @@
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import DrawerMenu from "../../components/DrawerMenu";
+import Title from "../../components/Title";
 import axios from "../../lib/axios";
+import MitraCreate from "./MitraCreate";
+import MitraList from "./MitraList";
 
 export default function MitraIndex() {
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state && location.state.userData;
-
-  console.log("aku dari mitra", data);
+  const [show, setShow] = useState(false);
 
   const logOutHandler = async () => {
     try {
@@ -22,8 +27,38 @@ export default function MitraIndex() {
     }
   };
 
+  const handlerClick = () => {
+    setShow(!show);
+  };
+
   if (data && data[0].role.name === "admin") {
-    return <div>p</div>;
+    return (
+      <>
+        <ToastContainer />
+        <Title name="Data Mitra" />
+        <DrawerMenu>
+          <div className="flex justify-end gap-x-2 mr-5">
+            <button
+              onClick={() => handlerClick()}
+              className={`btn mb-2 text-white ${
+                !show
+                  ? "bg-blue-500 hover:bg-blue-600 transition-all ease-in-out duration-150"
+                  : "bg-red-500 hover:bg-red-600 transition-all ease-in-out duration-150"
+              }`}
+            >
+              {!show ? "Create New" : "Close"}
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className="btn bg-red-500 hover:bg-red-600 transition-all ease-in-out duration-150 text-white"
+            >
+              back
+            </button>
+          </div>
+          {!show ? <MitraList /> : <MitraCreate />}
+        </DrawerMenu>
+      </>
+    );
   }
 
   logOutHandler();

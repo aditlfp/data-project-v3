@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import Title from "./Title";
 
 export default function Signup() {
@@ -44,16 +44,16 @@ export default function Signup() {
       <Title name="Sign Up" />
       <div className="mt-10 py-8 px-4 mx-auto max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16">
         <div className="flex flex-col justify-center">
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+          <h1 className="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl">
             Setup Your Account To Access Backend
           </h1>
-          <p className="mb-6 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
+          <p className="mb-6 text-lg font-normal text-gray-500 lg:text-xl">
             Here we focus on markets where technology, innovation, and capital
             can unlock long-term value and drive economic growth.
           </p>
         </div>
         <div>
-          <div className="w-full lg:max-w-xl p-6 space-y-8 sm:p-8 bg-lime-200 rounded-lg shadow-xl">
+          <div className="w-full lg:max-w-xl p-6 space-y-8 sm:p-8 bg-sky-300 rounded-lg shadow-xl">
             <h2 className="text-2xl font-bold text-gray-900 ">
               Sign Up to Backed Panel
             </h2>

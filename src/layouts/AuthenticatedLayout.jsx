@@ -6,12 +6,12 @@ import GuestLayout from "./GuestLayout";
 
 function AuthenticatedLayout({ props }) {
   const location = useLocation();
-  console.log("aku auth", props);
+  // console.log("aku auth", props);
 
   return (
     <div>
       <div>
-        {props.data ? <DrawerMenu isLogin={props.data} /> : <GuestLayout />}
+        {props.data ? <DrawerMenu isLogin={props.data}></DrawerMenu> : <GuestLayout />}
       </div>
       {/* <div className="mt-20"></div> */}
       <div className="fixed bottom-0 w-full">

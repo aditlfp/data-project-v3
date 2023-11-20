@@ -1,9 +1,10 @@
 import { debounce } from "lodash";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import BtnError from "../../components/BtnError";
 import BtnYellow from "../../components/BtnYellow";
+import DrawerMenu from "../../components/DrawerMenu";
 import SearchComponent from "../../components/SearchComponent";
 import Title from "../../components/Title";
 import axios from "../../lib/axios";
@@ -17,6 +18,13 @@ function BarangIndex() {
   const [search, setSearch] = useState();
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const data = location.state && location.state.userData;
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    setUser(data);
+  }, []);
 
   const fetchData = () => {
     axios
@@ -89,56 +97,57 @@ function BarangIndex() {
     <>
       <ToastContainer />
       <Title name="Data Barang" />
-
-      <span className="ml-4 text-xs rounded-full bg-indigo-400 pr-5 pl-1 mb-3 flex w-fit items-center">
-        <span className="mb-[3px] ml-1">
-          <a
-            onClick={navigasi}
-            href="javascript:void(0)"
-            className="text-black hover:text-slate-600 transition-all ease-linear .2s"
-          >
-            dashboard &gt;{" "}
-          </a>
-          <a href="#" className="text-slate-600">
-            barang
-          </a>
-        </span>
-      </span>
-      <div className="bg-indigo-300/70 min-h-screen mx-4 rounded-xl">
-        <div className="flex justify-center">
-          <span className="text-3xl font-bold text-black my-5">
-            {show ? "Data Barang" : "Tambah Barang"}
+      <DrawerMenu isLogin={user.data}>
+        <span className="ml-4 text-xs rounded-full bg-indigo-400 pr-5 pl-1 mb-3 flex w-fit items-center">
+          <span className="mb-[3px] ml-1">
+            <a
+              onClick={navigasi}
+              href="javascript:void(0)"
+              className="text-black hover:text-slate-600 transition-all ease-linear .2s"
+            >
+              dashboard &gt;{" "}
+            </a>
+            <a href="#" className="text-slate-600">
+              barang
+            </a>
           </span>
-        </div>
-        <div className="flex justify-end mr-11">
-          {show ? (
-            <div className="flex gap-x-2">
-              <div>
-                <SearchComponent onChange={handleSearchChange} />
+        </span>
+        <div className="bg-indigo-300/70 min-h-screen mx-4 rounded-xl">
+          <div className="flex justify-center">
+            <span className="text-3xl font-bold text-black my-5">
+              {show ? "Data Barang" : "Tambah Barang"}
+            </span>
+          </div>
+          <div className="flex justify-end mr-11">
+            {show ? (
+              <div className="flex gap-x-2">
+                <div>
+                  <SearchComponent onChange={handleSearchChange} />
+                </div>
+                <BtnError onClick={navigasi}>Back</BtnError>
+                <BtnYellow onClick={newBarang}>+ Barang</BtnYellow>
               </div>
-              <BtnError onClick={navigasi}>Back</BtnError>
-              <BtnYellow onClick={newBarang}>+ Barang</BtnYellow>
-            </div>
-          ) : (
-            <BtnError onClick={newBarang}>Close</BtnError>
-          )}
+            ) : (
+              <BtnError onClick={newBarang}>Close</BtnError>
+            )}
+          </div>
+          <div className="mx-10 bg-[#111827] py-2 rounded-xl">
+            {loading ? (
+              <div className="flex justify-center items-center my-20">
+                <span className="loading loading-spinner loading-lg"></span>
+              </div>
+            ) : show && list ? (
+              <BarangList barang={list} onUpdate={handleBarangUpdate} />
+            ) : list ? (
+              <BarangCreate />
+            ) : (
+              <div className="flex justify-center items-center">
+                <span className="loading loading-spinner loading-lg"></span>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="mx-10 bg-[#111827] py-2 rounded-xl">
-          {loading ? (
-            <div className="flex justify-center items-center my-20">
-              <span className="loading loading-spinner loading-lg"></span>
-            </div>
-          ) : show && list ? (
-            <BarangList barang={list} onUpdate={handleBarangUpdate} />
-          ) : list ? (
-            <BarangCreate />
-          ) : (
-            <div className="flex justify-center items-center">
-              <span className="loading loading-spinner loading-lg"></span>
-            </div>
-          )}
-        </div>
-      </div>
+      </DrawerMenu>
     </>
   );
 }
